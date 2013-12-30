@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">samsungAnimation</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="air_command">Air Command</string>
+    <string name="select1">select1</string>
+    <string name="select2">select2</string>
+    <string name="select3">select3</string>
+    <string name="select4">select4</string>
+    <string name="select5">select5</string>
+
+</resources>
