@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.samsunganimation.cameramode.CameraModeShow;
+import com.example.samsunganimation.circlelist.CircleListShow;
 import com.example.samsunganimation.fan.AirAnimationShow;
 
 
@@ -39,6 +41,16 @@ public class MainActivity extends ListActivity {
 		map.put("title", "AirAnimation");
 		map.put("class", AirAnimationShow.class.getName());
 		mData.add(map);
+		
+		map = new HashMap<String, String>();
+		map.put("title", "CircleList");
+		map.put("class", CircleListShow.class.getName());
+		mData.add(map);	
+		
+		map = new HashMap<String, String>();
+		map.put("title", "CameraMode");
+		map.put("class", CameraModeShow.class.getName());
+		mData.add(map);			
 	}
 	
 	

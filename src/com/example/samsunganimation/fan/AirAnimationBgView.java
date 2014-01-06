@@ -265,7 +265,7 @@ public class AirAnimationBgView extends FrameLayout {
 	private void loadViews(){
 		
 		LayoutInflater mInflater =  LayoutInflater.from(mContext);;
-		contentView = (FrameLayout)mInflater.inflate(R.layout.float_menu, null);
+		contentView = (FrameLayout)mInflater.inflate(R.layout.airanimation, null);
 		
 		actionMemo = (ImageView) contentView.findViewById(R.id.action_memo);
 		scrapBooker = (ImageView) contentView.findViewById(R.id.scrap_booker);

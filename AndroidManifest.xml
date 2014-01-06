@@ -30,6 +30,16 @@
             android:name="com.example.samsunganimation.fan.AirAnimationShow"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="com.example.samsunganimation.circlelist.CircleListShow"
+            android:label="@string/app_name" >
+        </activity>
+        
+        
+        <activity
+            android:name="com.example.samsunganimation.cameramode.CameraModeShow"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

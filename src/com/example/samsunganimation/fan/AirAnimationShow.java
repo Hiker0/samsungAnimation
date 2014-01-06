@@ -14,7 +14,7 @@ public class AirAnimationShow extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.floatmenu_test);
+		setContentView(R.layout.airanimation_show);
 		
 		mAirAnimationBgView = (AirAnimationBgView) this.findViewById(R.id.air_animate);
 		
