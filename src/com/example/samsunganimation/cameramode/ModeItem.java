@@ -4,14 +4,15 @@ import com.example.samsunganimation.R;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ModeItem extends RelativeLayout {
-	private ImageView imageview;
+	private ImageView imageview,focusView;
 	private TextView textview;
-	public int dy = 0,Index = -1;
+	public int dy = 0,Num = -1;
 	
 	public ModeItem(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -32,6 +33,7 @@ public class ModeItem extends RelativeLayout {
 		
 		this.setLayoutParams(lp);
 		
+		focusView = (ImageView) this.findViewById(R.id.focus);
 		imageview=(ImageView) this.findViewById(R.id.image);
 		textview =(TextView) this.findViewById(R.id.text);
 	}
@@ -43,6 +45,13 @@ public class ModeItem extends RelativeLayout {
 	public void setText(String text){
 		textview.setText(text);
 		
+	}
+	public void setFocus(boolean focus){
+		if(focus){
+			focusView.setVisibility(View.VISIBLE);
+		}else{
+			focusView.setVisibility(View.INVISIBLE);
+		}
 	}
 	
 }

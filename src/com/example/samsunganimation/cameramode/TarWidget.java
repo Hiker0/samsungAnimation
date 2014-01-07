@@ -8,21 +8,26 @@ import android.graphics.Canvas;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
 import com.example.samsunganimation.R;
 
 public class TarWidget extends ViewGroup implements View.OnTouchListener {
 	
+	final String TAG = "TarWidget";
 	private ArrayList<Item> list;
 	private ArrayList<ModeItem> viewlist;
 	private Context mContext;
 	private SoundPool sound = null;
 	private int mSoundId = 0;
 	final static int TIP_NUM = 20;
+    private int curFocus =2;
 	
 	int pointX[]= {102,132,198,358,520,582,620};
 	int pointY[]= {417,366,273,186,273,366,417};
@@ -41,12 +46,6 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 			R.drawable.mode_eraser,
 			R.drawable.mode_focus,
 			R.drawable.mode_golfshot,};
-	
-	final static int RADIUS = 260;
-	final static float ratio = 0.8f;
-	final static double PAI = 3.1415926f;
-	int CENTER_X = 360;
-	int CENTER_Y = 380;
 	
 	int lastTip = 10;
 	int current = 0;
@@ -83,11 +82,16 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 			itemview.setText(item.text);
 			//emview.setVisibility(View.INVISIBLE);
 			viewlist.add(itemview);
+			itemview.Num = i;
+			if(i==2){
+				itemview.setFocus(true);
+			}
 			
 		    this.addView(itemview);	
 		}
 		
-		handler.postDelayed(runnable, 10);
+		this.setOnTouchListener(this);
+		//handler.postDelayed(runnable, 10);
 	}
 
 	public TarWidget(Context context, AttributeSet attrs) {
@@ -164,7 +168,7 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		// TODO Auto-generated method stub
-			locatePosition(lastTip);
+			locatePosition();
 		}
 	
 	
@@ -173,16 +177,16 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 			sound.play(mSoundId,  1.0F, 1.0F, 1, 0, 1.0F);
 		}
 	}
-	public void onTipChanged(int dtip){
+	public void  onTipChanged(int dtip){
 		
-		int curTip = lastTip + dtip;
+		int curTip = lastTip + dtip%TIP_NUM;
 		int num = viewlist.size();
 		ModeItem itemview;
+	
 		
 		if(curTip < 0){
 			itemview= viewlist.get((current+5)%num);
 			itemview.setVisibility(View.VISIBLE);
-			itemview.Index = -1;
 			itemview= viewlist.get(current);
 			itemview.setVisibility(View.INVISIBLE);
 			
@@ -222,20 +226,21 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		int num = viewlist.size();
 		int dheight,dwidth;
 	
-		
+		Log.d(TAG, "lastTip="+lastTip);
 		itemview= viewlist.get((current+index)%num);
 		int total = lastTip+index*TIP_NUM;
 		int level = (total+10)/TIP_NUM;
 		int tip = (total+10)%TIP_NUM;
 		
 		
-		
+		Log.d(TAG, "level="+level);
 		mscale =SCALE[level]+ (SCALE[level+1]-SCALE[level])/TIP_NUM*tip;
 		dx = pointX[level]+ (pointX[level+1]-pointX[level])/TIP_NUM*tip;
 		dy = pointY[level]+ (pointY[level+1]-pointY[level])/TIP_NUM*tip;
 
 		
 		itemview.dy = dy;
+		
 		itemview.setScaleX(mscale);
 		itemview.setScaleY(mscale);
 		dheight= (int) (itemview.getMeasuredHeight()*0.5);
@@ -262,7 +267,7 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		itemview= viewlist.get((current+2)%num);
 		this.bringChildToFront(itemview);
 	}
-	private void locatePosition(final int curDegree){
+	private void locatePosition(){
 		locateItemPosition(0);
 		locateItemPosition(1);
 		locateItemPosition(2);
@@ -271,11 +276,219 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		setFront();
 
 	}
+	
+	private void reLocate(){
+		if(lastTip !=  10){
+			lastTip = 10;
+			locateItemPosition(0);
+			locateItemPosition(1);
+			locateItemPosition(2);
+			locateItemPosition(3);
+			locateItemPosition(4);
+		}
+	}
 
+	
+	private float lastX = 0;
+	private int flag = FLAG_NONE;
+	final static int FLAG_NONE = 0;
+	final static int FLAG_CLICK = 1;
+	final static int FLAG_EMOVE = 2;
+	final static int FLAG_MOVE = 3;
+	final static int CUSTOM_LONGPRESS = 50;
+	private ModeItem clickItem;
+	
+	private VelocityTracker mVelocityTracker = VelocityTracker.obtain();;
+	
+	private ModeItem getClickItem(float x, float y){
+		
+		ModeItem itemview;
+	
+		int num = viewlist.size();
+		
+		itemview= viewlist.get((current+2)%num);
+		if(x > itemview.getLeft()
+				&& x < itemview.getRight()
+				&& y > itemview.getTop()
+				&& y < itemview.getBottom())
+		{
+			return itemview;
+		}
+		
+		itemview= viewlist.get((current+1)%num);
+		if(x > itemview.getLeft()
+				&& x < itemview.getRight()
+				&& y > itemview.getTop()
+				&& y < itemview.getBottom())
+		{
+			return itemview;
+		}
+		
+		itemview= viewlist.get((current+3)%num);
+		if(x > itemview.getLeft()
+				&& x < itemview.getRight()
+				&& y > itemview.getTop()
+				&& y < itemview.getBottom())
+		{
+			return itemview;
+		}
+		
+		itemview= viewlist.get(current);
+		if(x > itemview.getLeft()
+				&& x < itemview.getRight()
+				&& y > itemview.getTop()
+				&& y < itemview.getBottom())
+		{
+			return itemview;
+		}
+		
+		itemview= viewlist.get((current+4)%num);
+		if(x > itemview.getLeft()
+				&& x < itemview.getRight()
+				&& y > itemview.getTop()
+				&& y < itemview.getBottom())
+		{
+			return itemview;
+		}
+		
+		return null;
+	}
+	
+	Runnable longRunnable= new Runnable(){
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			flag = FLAG_EMOVE;
+		}
+		
+	};
+	
+	class PopRunnable implements Runnable{
+		int tipTime,mTip;
+		public PopRunnable(int tiptime, int tip){
+			tipTime= tiptime;
+			mTip = tip;
+		}
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			onTipChanged(mTip);
+			tipTime -=1;
+			if(tipTime > 0){
+				handler.post(this);
+			}else{
+				reLocate();
+				flag = FLAG_NONE;
+			}
+		}
+	}
+	private void doClick(ModeItem itemview){
+		int num = viewlist.size();
+		int click = itemview.Num - current;
+		if(click < 0){
+			click += num;
+		}
+		if(click == 2){
+					
+			itemview= viewlist.get(curFocus);
+			itemview.setFocus(false);
+			
+			itemview= viewlist.get((current+2)%num);
+			itemview.setFocus(true);
+			
+			curFocus = itemview.Num;
+		}else{
+			playPop(click);
+		}
+	}
+	
+	
+	private void playPop(int click){
+		int totalTip = (2-click)*20;
+		
+		if(totalTip > 0){
+			handler.post(new PopRunnable(totalTip/5,5));
+		}else{
+			handler.post(new PopRunnable((-totalTip)/5,-5));
+		}
+				
+	}
+	
+	private void pressVelocityTracker(int velocityX){
+		if(Math.abs(velocityX) < 1000){
+			return;
+		}
+		
+		int totalTip = velocityX /80;
+		
+		if(totalTip > 0){
+			handler.post(new PopRunnable(totalTip/7,7));
+		}else{
+			handler.post(new PopRunnable((-totalTip)/7,-7));
+		}
+		
+		flag = FLAG_NONE;
+	}
+
+	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
-		return false;
+		
+		float x = event.getX();
+		float y = event.getY();
+		 mVelocityTracker.addMovement(event);
+		 
+		switch(event.getAction()){
+		
+		case MotionEvent.ACTION_DOWN:
+			clickItem = getClickItem(x,y);
+			clickItem.setFocus(true);
+			
+			if( clickItem != null){
+				flag = FLAG_CLICK;
+				handler.postDelayed(longRunnable,CUSTOM_LONGPRESS);
+			}
+			break;
+		case MotionEvent.ACTION_MOVE:
+			int tip = (int) ((x-lastX)/5);
+			if(flag <= FLAG_CLICK){
+				lastX = x;
+				break;
+			}
+			
+			if( tip != 0){
+				onTipChanged(tip);
+				flag = FLAG_MOVE;
+				handler.removeCallbacks(longRunnable);
+				lastX = x;
+			}
+			
+			break;
+		case MotionEvent.ACTION_UP:
+			if(clickItem.Num != curFocus){
+				clickItem.setFocus(false);
+			}
+			if(flag > FLAG_CLICK){
+				mVelocityTracker.computeCurrentVelocity(1000, ViewConfiguration.getMaximumFlingVelocity());
+	            int velocityX = (int) mVelocityTracker.getXVelocity();
+	            pressVelocityTracker(velocityX);
+			}
+            
+			if(flag == FLAG_CLICK || flag == FLAG_EMOVE){
+				doClick(clickItem);				
+			}else if(flag == FLAG_MOVE){
+			
+				reLocate();
+			}
+			flag = FLAG_NONE;
+			clickItem = null;
+			break;
+		}
+
+		return true;
 	}
 
 	
