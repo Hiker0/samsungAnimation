@@ -9,12 +9,13 @@ import android.media.SoundPool;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.samsunganimation.R;
 
-public class TarWidget extends ViewGroup {
+public class TarWidget extends ViewGroup implements View.OnTouchListener {
 	
 	private ArrayList<Item> list;
 	private ArrayList<ModeItem> viewlist;
@@ -86,7 +87,7 @@ public class TarWidget extends ViewGroup {
 		    this.addView(itemview);	
 		}
 		
-		//handler.postDelayed(runnable, 10);
+		handler.postDelayed(runnable, 10);
 	}
 
 	public TarWidget(Context context, AttributeSet attrs) {
@@ -178,31 +179,37 @@ public class TarWidget extends ViewGroup {
 		int num = viewlist.size();
 		ModeItem itemview;
 		
-		if(curTip >= TIP_NUM){
-	
-			current -= 1;
-			lastTip = curTip + TIP_NUM;
-			
-			itemview= viewlist.get((current+5)%num);
-			itemview.setVisibility(View.INVISIBLE);
-			itemview= viewlist.get(current);
-			itemview.setVisibility(View.VISIBLE);
-			playSound();
-			
-		}else if((curTip > 0)){
+		if(curTip < 0){
 			itemview= viewlist.get((current+5)%num);
 			itemview.setVisibility(View.VISIBLE);
+			itemview.Index = -1;
 			itemview= viewlist.get(current);
 			itemview.setVisibility(View.INVISIBLE);
 			
 			current += 1;
+			lastTip = curTip + TIP_NUM;
+			current = current % num;
+			
+
+			playSound();
+			
+		}else if((curTip >= TIP_NUM)){
+			
+			current -= 1;
 			lastTip = curTip - TIP_NUM;
+			current = (current+num) % num;
+			
+			itemview= viewlist.get((current+5)%num);
+			itemview.setVisibility(View.INVISIBLE);
+			itemview= viewlist.get(current);
+			itemview.setVisibility(View.VISIBLE);
+			
 			playSound();
 		}else{
 			lastTip = curTip;
 		}
 		
-		current = (current+num) % num;
+		
 		
 		this.requestLayout();
 	}
@@ -264,5 +271,12 @@ public class TarWidget extends ViewGroup {
 		setFront();
 
 	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	
 }

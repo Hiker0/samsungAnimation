@@ -11,7 +11,7 @@ import android.widget.TextView;
 public class ModeItem extends RelativeLayout {
 	private ImageView imageview;
 	private TextView textview;
-	public int dy = 0;
+	public int dy = 0,Index = -1;
 	
 	public ModeItem(Context context, AttributeSet attrs) {
 		super(context, attrs);
