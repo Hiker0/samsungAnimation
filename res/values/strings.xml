@@ -10,5 +10,15 @@
     <string name="select3">select3</string>
     <string name="select4">select4</string>
     <string name="select5">select5</string>
+    
+    <string name="mode_photo_title">拍照</string>
+    <string name="mode_hdr_title">色彩丰富(HDR)</string>
+    <string name="mode_facebeauty_title">美肌</string>
+    <string name="mode_panorama_title">全景拍摄</string>
+    <string name="mode_mav_title">环绕拍摄</string>
+    <string name="mode_asd_title">最佳拍照</string>
+    <string name="mode_smile_title">笑脸</string>
+    <string name="mode_best_shot_title">最佳拍照</string>
+    <string name="mode_ev_bracket_shot_title">自动</string>
 
 </resources>

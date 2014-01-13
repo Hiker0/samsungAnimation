@@ -10,8 +10,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ModeItem extends RelativeLayout {
-	private ImageView imageview,focusView;
+	private ImageView imageview,focusView,enableView;
 	private TextView textview;
+	private boolean focused = false,  enabled = true;
 	public int dy = 0,Num = -1;
 	
 	public ModeItem(Context context, AttributeSet attrs) {
@@ -34,8 +35,12 @@ public class ModeItem extends RelativeLayout {
 		this.setLayoutParams(lp);
 		
 		focusView = (ImageView) this.findViewById(R.id.focus);
-		imageview=(ImageView) this.findViewById(R.id.image);
+		imageview = (ImageView) this.findViewById(R.id.image);
 		textview =(TextView) this.findViewById(R.id.text);
+		enableView = (ImageView) this.findViewById(R.id.disable);
+		
+		doFocus(focused);
+		doEnabled(enabled);
 	}
 	
 	public void setImage(int resId){
@@ -46,12 +51,26 @@ public class ModeItem extends RelativeLayout {
 		textview.setText(text);
 		
 	}
-	public void setFocus(boolean focus){
+	public void doFocus(boolean focus){
+		focused = focus;
 		if(focus){
 			focusView.setVisibility(View.VISIBLE);
 		}else{
 			focusView.setVisibility(View.INVISIBLE);
 		}
+	}
+	
+	public void doEnabled(boolean enable){
+		enabled = enable;
+		if(enable){
+			enableView.setVisibility(View.INVISIBLE );
+		}else{
+			enableView.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public boolean isEnabled(){
+		return enabled;
 	}
 	
 }

@@ -6,7 +6,7 @@
     <ImageView 
         android:id="@+id/image"
     	android:layout_width="188dp"
-    	android:layout_height="152dp"
+    	android:layout_height="141dp"
     	/>
 
     <TextView 
@@ -16,17 +16,22 @@
         android:background="@drawable/mode_black_bg_bottom"
         android:gravity="center_horizontal"
         android:layout_alignBottom="@+id/image"
-        android:layout_marginBottom="12dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
+         android:layout_marginBottom="2dp"
         android:textColor="#FFFFFF"
-        android:textSize="25dp"
+        android:textSize="20dp"
         />
     <ImageView 
         android:id="@+id/focus"
     	android:layout_width="188dp"
-    	android:layout_height="152dp"
+    	android:layout_height="141dp"
     	android:src="@drawable/mode_focus"
-    	android:visibility="invisible"
+    	/>
+    <ImageView 
+        android:id="@+id/disable"
+    	android:layout_width="188dp"
+    	android:layout_height="141dp"
+    	android:background="#a9a9a9a9"
     	/>
 </com.example.samsunganimation.cameramode.ModeItem>

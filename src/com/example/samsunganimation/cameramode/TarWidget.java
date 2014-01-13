@@ -3,8 +3,9 @@ package com.example.samsunganimation.cameramode;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Canvas;
+import android.content.res.Resources;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -21,7 +22,6 @@ import com.example.samsunganimation.R;
 public class TarWidget extends ViewGroup implements View.OnTouchListener {
 	
 	final String TAG = "TarWidget";
-	private ArrayList<Item> list;
 	private ArrayList<ModeItem> viewlist;
 	private Context mContext;
 	private SoundPool sound = null;
@@ -32,63 +32,29 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 	int pointX[]= {102,132,198,358,520,582,620};
 	int pointY[]= {417,366,273,186,273,366,417};
 	float SCALE[]={0.5f,0.65f,0.8f,1.0f,0.8f,0.65f,0.5f};
-	
-	
-	int[] imageids={R.drawable.mode_3d_photo,
-			R.drawable.mode_animated_scene,
-			R.drawable.mode_aqua,
-			R.drawable.mode_auto,
-			R.drawable.mode_beauty_face,
-			R.drawable.mode_best_face,
-			R.drawable.mode_best_photo,
-			R.drawable.mode_continuous,
-			R.drawable.mode_dramashot,
-			R.drawable.mode_eraser,
-			R.drawable.mode_focus,
-			R.drawable.mode_golfshot,};
+	float orentationDegree = 0;
 	
 	int lastTip = 10;
 	int current = 0;
 	int itemNum = 10;
+	int layoutType = 0;
+	
+	TarWidgetListener mlistener;
 	
 	private Handler handler = new Handler();
-	private Runnable runnable=  new Runnable(){
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			onTipChanged(2);
-			handler.postDelayed(runnable,0);
-		}
+	
+	
+	public interface TarWidgetListener{
 		
-	};
+		void onItemClick(int index);	
+	}
+	
+
 	public TarWidget(Context context){
 		super(context);
 		
-		setWillNotDraw(false);
 		
 		mContext = context;
-		viewlist = new ArrayList<ModeItem>();
-		
-		initList();
-		
-		LayoutInflater mInflater =  LayoutInflater.from(mContext);
-		
-		for(int i=0;i<list.size();i++){
-		
-			ModeItem itemview = (ModeItem) mInflater.inflate(R.layout.modeitem, null);
-			Item item = list.get(i);
-			itemview.setImage(item.imageId);
-			itemview.setText(item.text);
-			//emview.setVisibility(View.INVISIBLE);
-			viewlist.add(itemview);
-			itemview.Num = i;
-			if(i==2){
-				itemview.setFocus(true);
-			}
-			
-		    this.addView(itemview);	
-		}
 		
 		this.setOnTouchListener(this);
 		//handler.postDelayed(runnable, 10);
@@ -99,27 +65,76 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		// TODO Auto-generated constructor stub
 		
 		mContext = context;
+		this.setOnTouchListener(this);
 	}
 	
-	public class Item{
-		int imageId;
-		String text;
+
+	
+	public void  initialItems(int[] images,int[] texts){
+		LayoutInflater mInflater =  LayoutInflater.from(mContext);
+		viewlist = new ArrayList<ModeItem>();
 		
-		public Item(int imageid, String string){
-			imageId = imageid; 
-			text = string;
-		}		
+		for(int i=0;i< images.length;i++){
+		
+			ModeItem itemview = (ModeItem) mInflater.inflate(R.layout.modeitem, null);
+			itemview.setImage(images[i]);
+			
+			Resources res = mContext.getResources();
+			String st = res.getString(texts[i]);
+			itemview.setText(st);
+			
+			
+			itemview.Num = i;
+			itemview.setRotation(orentationDegree);
+			
+		    this.addView(itemview);	
+		    viewlist.add(itemview);
+		}
+		
+		if(viewlist.size() < 5){
+			layoutType = 1;
+		}
+	}
+	
+	public void enableItem(int index){
+		viewlist.get(index).doEnabled(true);
+	}
+	
+	public void disableItem(int index){
+		viewlist.get(index).doEnabled(false);
+	}
+	
+	public void focusItem(int index){
+		curFocus = index;
+		int num = viewlist.size();
+		if(num > 0){
+			for(int i = 0;i < num;i++){
+				if(index == i){
+					viewlist.get(i).doFocus(true);
+				}else{
+					viewlist.get(i).doFocus(false);
+				}
+			}
+		}
 		
 	}
 	
-	private void initList(){
-		
-		list = new ArrayList<Item>();
-		for(int i=0; i<10; i++){
-			Item item = new Item(imageids[i],Integer.toString(i));
-			list.add(item);	
-		} 
+	public void setListener(TarWidgetListener listener){
+		mlistener = listener;
 	}
+	
+	public void onOrientationChanged(float degree){
+		if(viewlist == null){
+			return;
+		}
+		int num = viewlist.size();
+		ModeItem itemview;
+		for(int i=0; i < num; i++){
+			itemview = viewlist.get(i);
+			itemview.setRotation(degree);
+		}
+	}
+	
 	
 	protected void onFinishInflate() {
 		// TODO Auto-generated method stub
@@ -156,14 +171,6 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		sound.release();
 	}
 
-	@Override
-	protected void onDraw(Canvas canvas) {
-		// TODO Auto-generated method stub
-		//super.onDraw(canvas);
-		//ModeItem itemview = viewlist.get(0);
-		
-		//itemview.draw(canvas);
-	}
 
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -172,12 +179,7 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		}
 	
 	
-	private void playSound(){
-		if(sound != null){
-			sound.play(mSoundId,  1.0F, 1.0F, 1, 0, 1.0F);
-		}
-	}
-	public void  onTipChanged(int dtip){
+	private void  onTipChanged(int dtip){
 		
 		int curTip = lastTip + dtip%TIP_NUM;
 		int num = viewlist.size();
@@ -218,6 +220,11 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		this.requestLayout();
 	}
 	
+	private void playSound(){
+		if(sound != null){
+			sound.play(mSoundId,  1.0F, 1.0F, 1, 0, 1.0F);
+		}
+	}
 	
 	private void locateItemPosition(int index){
 		ModeItem itemview;
@@ -268,6 +275,9 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		this.bringChildToFront(itemview);
 	}
 	private void locatePosition(){
+		if(viewlist == null){
+			return;
+		}
 		locateItemPosition(0);
 		locateItemPosition(1);
 		locateItemPosition(2);
@@ -295,10 +305,10 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 	final static int FLAG_CLICK = 1;
 	final static int FLAG_EMOVE = 2;
 	final static int FLAG_MOVE = 3;
-	final static int CUSTOM_LONGPRESS = 50;
+	final static int CUSTOM_LONGPRESS = 200;
 	private ModeItem clickItem;
 	
-	private VelocityTracker mVelocityTracker = VelocityTracker.obtain();;
+	private VelocityTracker mVelocityTracker = null;
 	
 	private ModeItem getClickItem(float x, float y){
 		
@@ -380,6 +390,7 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 			}else{
 				reLocate();
 				flag = FLAG_NONE;
+				clickItem = null;
 			}
 		}
 	}
@@ -392,12 +403,13 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		if(click == 2){
 					
 			itemview= viewlist.get(curFocus);
-			itemview.setFocus(false);
+			itemview.doFocus(false);
 			
 			itemview= viewlist.get((current+2)%num);
-			itemview.setFocus(true);
+			itemview.doFocus(true);
 			
 			curFocus = itemview.Num;
+			mlistener.onItemClick(curFocus);
 		}else{
 			playPop(click);
 		}
@@ -415,12 +427,12 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 				
 	}
 	
-	private void pressVelocityTracker(int velocityX){
-		if(Math.abs(velocityX) < 1000){
-			return;
+	private int  pressVelocityTracker(int velocityX){
+		if(Math.abs(velocityX) < 100){
+			return 0;
 		}
 		
-		int totalTip = velocityX /80;
+		int totalTip = velocityX /8;
 		
 		if(totalTip > 0){
 			handler.post(new PopRunnable(totalTip/7,7));
@@ -429,9 +441,11 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		}
 		
 		flag = FLAG_NONE;
+		return 1;
 	}
 
 	
+	@SuppressLint("Recycle")
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
@@ -439,57 +453,74 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		
 		float x = event.getX();
 		float y = event.getY();
+		if(mVelocityTracker == null){
+			mVelocityTracker=VelocityTracker.obtain();
+		}
 		 mVelocityTracker.addMovement(event);
 		 
 		switch(event.getAction()){
 		
-		case MotionEvent.ACTION_DOWN:
-			clickItem = getClickItem(x,y);
-			clickItem.setFocus(true);
-			
-			if( clickItem != null){
-				flag = FLAG_CLICK;
-				handler.postDelayed(longRunnable,CUSTOM_LONGPRESS);
-			}
-			break;
-		case MotionEvent.ACTION_MOVE:
-			int tip = (int) ((x-lastX)/5);
-			if(flag <= FLAG_CLICK){
+			case MotionEvent.ACTION_DOWN:
 				lastX = x;
+				clickItem = getClickItem(x,y);
+				
+				if( clickItem != null){
+					clickItem.doFocus(true);
+					flag = FLAG_CLICK;
+					handler.postDelayed(longRunnable,CUSTOM_LONGPRESS);
+				}
+				break;
+			case MotionEvent.ACTION_MOVE:
+				if(flag ==  FLAG_NONE){
+					break;
+				}
+				
+				int tip = (int) ((x-lastX)/5);
+				Log.d(TAG,"ACTION_MOVE x="+x + ", lastX ="+lastX);
+				
+				if( tip != 0){
+					onTipChanged(tip);
+					flag = FLAG_MOVE;
+					handler.removeCallbacks(longRunnable);
+					lastX = x;
+				}
+				
+				break;
+			case MotionEvent.ACTION_CANCEL:
+			case MotionEvent.ACTION_UP:
+				if(flag == FLAG_NONE || clickItem == null){
+					flag = FLAG_NONE;
+					clickItem = null;
+					break;
+				}
+				
+				mVelocityTracker.computeCurrentVelocity(100, ViewConfiguration.getMaximumFlingVelocity());
+	            int velocityX = (int) mVelocityTracker.getXVelocity();
+	            int tracked =  pressVelocityTracker(velocityX);
+				
+	            
+				if(flag == FLAG_CLICK){
+					doClick(clickItem);				
+				}else if(tracked == 0){
+					reLocate();
+				}
+				
+				if(clickItem.Num != curFocus){
+					clickItem.doFocus(false);
+				}
+				
+				flag = FLAG_NONE;
+				clickItem = null;
+				
+		        if (mVelocityTracker != null) {
+		            mVelocityTracker.recycle();
+		            mVelocityTracker = null;
+		        }
 				break;
 			}
-			
-			if( tip != 0){
-				onTipChanged(tip);
-				flag = FLAG_MOVE;
-				handler.removeCallbacks(longRunnable);
-				lastX = x;
-			}
-			
-			break;
-		case MotionEvent.ACTION_UP:
-			if(clickItem.Num != curFocus){
-				clickItem.setFocus(false);
-			}
-			if(flag > FLAG_CLICK){
-				mVelocityTracker.computeCurrentVelocity(1000, ViewConfiguration.getMaximumFlingVelocity());
-	            int velocityX = (int) mVelocityTracker.getXVelocity();
-	            pressVelocityTracker(velocityX);
-			}
-            
-			if(flag == FLAG_CLICK || flag == FLAG_EMOVE){
-				doClick(clickItem);				
-			}else if(flag == FLAG_MOVE){
-			
-				reLocate();
-			}
-			flag = FLAG_NONE;
-			clickItem = null;
-			break;
-		}
-
-		return true;
+	
+			return true;
 	}
-
+    
 	
 }
