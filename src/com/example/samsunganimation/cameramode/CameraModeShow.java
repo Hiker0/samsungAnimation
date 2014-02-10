@@ -2,12 +2,18 @@ package com.example.samsunganimation.cameramode;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 
 import com.example.samsunganimation.R;
 
 public class CameraModeShow extends Activity {
+	final static String TAG = "CameraModeShow";
 	
     private static final int[] MODE_ICONS = new int[]{
         R.drawable.mode_storyshot,
@@ -37,6 +43,26 @@ public class CameraModeShow extends Activity {
 	int deree = 0;
 	OrientationEventListener lis;
 	int orientationHistory = OrientationEventListener.ORIENTATION_UNKNOWN;
+	private TextView infoView  ;
+	private ImageButton  mViewBack,mViewAuto;
+	
+
+	private View.OnClickListener mClickListener  = new View.OnClickListener(){
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			if(v == mViewBack){
+				
+			}
+			
+			if(v == mViewAuto){
+				
+			}
+		}
+		
+	};
+	
 	
 	private TarWidget.TarWidgetListener clickCallback = new TarWidget.TarWidgetListener(){
 
@@ -62,6 +88,13 @@ public class CameraModeShow extends Activity {
 		wiget.initialItems(MODE_ICONS, MODE_TEXT);
 		wiget.focusItem(2);
 		wiget.setListener(clickCallback);
+        mViewBack = (ImageButton) this.findViewById(R.id.back);
+        mViewAuto = (ImageButton) this.findViewById(R.id.auto);
+        infoView  = (TextView)this.findViewById(R.id.info);
+        mViewAuto.setOnClickListener(mClickListener);
+        mViewBack.setOnClickListener(mClickListener);
+        infoView.setText("asdfasdfasdf sadfgdfgdfghfgh rthgrfgh");
+        updateInfo();
 //		LinearLayout root = (LinearLayout) this.findViewById(R.id.picker);
 //		final TarWidget wiget = new TarWidget(this);
 //		wiget.initialItems(MODE_ICONS_NORMAL, MODE_TEXT);
@@ -83,7 +116,6 @@ public class CameraModeShow extends Activity {
 //				button.setText(""+deree);
 //			}
 //		});
-		
 		lis = new OrientationEventListener(this){
 
 			@Override
@@ -94,12 +126,63 @@ public class CameraModeShow extends Activity {
 					orientationHistory = orient;
 					wiget.onOrientationChanged(-orientationHistory);
 				}
+				updateInfo();
 			}
 			
 		};
 		
 	
 	}
+	
+	private void updateInfo(){
+		switch(orientationHistory){
+			case 0:
+			{
+				infoView.setBackgroundResource(R.drawable.description_bubble_popup_01);
+				
+				LayoutParams params = new LayoutParams(500, 200);
+				params.topMargin = 450;
+				params.leftMargin = 110;
+				infoView.setLayoutParams(params);
+				infoView.setPadding(20, 20, 20, 20);
+				break;
+			}
+			case 90:
+			{
+				infoView.setBackgroundResource(R.drawable.description_bubble_popup_04);
+				LayoutParams params = new LayoutParams(500, 200);
+				params.topMargin = 250;
+				params.leftMargin = 110;
+				infoView.setLayoutParams(params);
+				infoView.setPadding(40, 20, 20, 20);
+				break;
+			}
+			case 270:
+			{  
+				infoView.setBackgroundResource(R.drawable.description_bubble_popup_03);
+				infoView.setBackgroundResource(R.drawable.description_bubble_popup_04);
+				LayoutParams params = new LayoutParams(500, 200);
+				params.topMargin = 250;
+				params.leftMargin = 110;
+				infoView.setLayoutParams(params);
+				infoView.setPadding(40, 20, 20, 20);
+				
+				break;
+			}
+			case 180:
+			{
+				infoView.setBackgroundResource(R.drawable.description_bubble_popup_02);
+				LayoutParams params = new LayoutParams(500, 200);
+				params.topMargin = 450;
+				params.leftMargin = 110;
+				infoView.setLayoutParams(params);
+				infoView.setPadding(20, 10, 20, 40);
+				break;
+			}
+		}
+		infoView.setRotation(-orientationHistory);
+	}
+	
     public static int roundOrientation(int orientation, int orientationHistory) {
         boolean changeOrientation = false;
         if (orientationHistory == OrientationEventListener.ORIENTATION_UNKNOWN) {
@@ -112,6 +195,8 @@ public class CameraModeShow extends Activity {
         if (changeOrientation) {
             return ((orientation + 45) / 90 * 90) % 360;
         }
+        
+        Log.d(TAG,"orientationHistory=" +orientationHistory);
         return orientationHistory;
     }
     

@@ -10,6 +10,7 @@ import android.media.SoundPool;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -19,7 +20,9 @@ import android.view.ViewGroup;
 
 import com.example.samsunganimation.R;
 
-public class TarWidget extends ViewGroup implements View.OnTouchListener {
+public class TarWidget extends ViewGroup 
+			implements View.OnTouchListener,View.OnKeyListener	
+			{
 	
 	final String TAG = "TarWidget";
 	private ArrayList<ModeItem> viewlist;
@@ -57,6 +60,7 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		mContext = context;
 		
 		this.setOnTouchListener(this);
+		this.setOnKeyListener(this);
 		//handler.postDelayed(runnable, 10);
 	}
 
@@ -66,6 +70,7 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 		
 		mContext = context;
 		this.setOnTouchListener(this);
+		this.setOnKeyListener(this);
 	}
 	
 
@@ -521,6 +526,20 @@ public class TarWidget extends ViewGroup implements View.OnTouchListener {
 	
 			return true;
 	}
+
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
+			if(mlistener != null){
+				mlistener.onItemClick(curFocus);
+			}
+			return true;
+		}
+		return false;
+	}
+
+
     
 	
 }
