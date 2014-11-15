@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.example.samsunganimation.R;
 import com.example.samsunganimation.cameramode.ModeBase.ModeListener;
 
-public class CameraModeShow extends Activity {
+public class CameraModeListShow extends Activity {
 	final static String TAG = "CameraModeShow";
 	
     private static final int[] MODE_ICONS = new int[]{
@@ -92,8 +92,8 @@ public class CameraModeShow extends Activity {
 
 		// TODO Auto-generated method stub
 		
-		final ModeBase wiget = (ModeBase) this.findViewById(R.id.picker);
-		this.findViewById(R.id.picker_root).setVisibility(View.VISIBLE);
+		final ModeBase wiget = (ModeBase) this.findViewById(R.id.listpicker);
+		this.findViewById(R.id.listpicker).setVisibility(View.VISIBLE);
 		wiget.initialItems(MODE_ICONS, MODE_TEXT);
 		wiget.focusItem(2);
 		wiget.setListener(clickCallback);
@@ -104,7 +104,15 @@ public class CameraModeShow extends Activity {
         mViewBack.setOnClickListener(mClickListener);
         infoView.setText("asdfasdfasdf sadfgdfgdfghfgh rthgrfgh");
         updateInfo();
-
+//		LinearLayout root = (LinearLayout) this.findViewById(R.id.picker);
+//		final TarWidget wiget = new TarWidget(this);
+//		wiget.initialItems(MODE_ICONS_NORMAL, MODE_TEXT);
+//		//final Button button = (Button) this.findViewById(R.id.add);
+//		
+//		float height = this.getResources().getDimension(R.dimen.modelist_height);
+//		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1,(int) height);
+//		wiget.setLayoutParams(lp);
+//		root.addView(wiget);
 		super.onStart();
 		
 //		button.setOnClickListener(new View.OnClickListener() {

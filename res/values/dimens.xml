@@ -4,5 +4,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="modelist_height">250dp</dimen>
+    <dimen name="modelist_item_length">141dp</dimen>
+    <dimen name="modelist_item_text_width">137dp</dimen>
 
 </resources>

@@ -20,8 +20,9 @@ import android.view.ViewGroup;
 
 import com.example.samsunganimation.R;
 
+
 public class TarWidget extends ViewGroup 
-			implements View.OnTouchListener,View.OnKeyListener	
+			implements View.OnTouchListener,View.OnKeyListener,ModeBase
 			{
 	
 	final String TAG = "TarWidget";
@@ -30,6 +31,7 @@ public class TarWidget extends ViewGroup
 	private SoundPool sound = null;
 	private int mSoundId = 0;
 	final static int TIP_NUM = 20;
+	final static int TIP_FAR = 10;
     private int curFocus =2;
 	
 	int pointX[]= {102,132,198,358,520,582,620};
@@ -42,15 +44,12 @@ public class TarWidget extends ViewGroup
 	int itemNum = 10;
 	int layoutType = 0;
 	
-	TarWidgetListener mlistener;
+	ModeListener mlistener;
 	
 	private Handler handler = new Handler();
 	
 	
-	public interface TarWidgetListener{
-		
-		void onItemClick(int index);	
-	}
+
 	
 
 	public TarWidget(Context context){
@@ -124,7 +123,7 @@ public class TarWidget extends ViewGroup
 		
 	}
 	
-	public void setListener(TarWidgetListener listener){
+	public void setListener(ModeListener listener){
 		mlistener = listener;
 	}
 	
@@ -437,7 +436,7 @@ public class TarWidget extends ViewGroup
 			return 0;
 		}
 		
-		int totalTip = velocityX /8;
+		int totalTip = velocityX /TIP_FAR;
 		
 		if(totalTip > 0){
 			handler.post(new PopRunnable(totalTip/7,7));
@@ -480,7 +479,7 @@ public class TarWidget extends ViewGroup
 					break;
 				}
 				
-				int tip = (int) ((x-lastX)/5);
+				int tip = (int) ((x-lastX)/TIP_FAR);
 				Log.d(TAG,"ACTION_MOVE x="+x + ", lastX ="+lastX);
 				
 				if( tip != 0){

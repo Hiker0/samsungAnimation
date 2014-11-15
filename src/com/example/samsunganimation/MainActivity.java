@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.samsunganimation.cameramode.CameraModeListShow;
 import com.example.samsunganimation.cameramode.CameraModeShow;
 import com.example.samsunganimation.circlelist.CircleListShow;
 import com.example.samsunganimation.fan.AirAnimationShow;
+import com.example.samsunganimation.swipelist.SwipeListActivity;
 
 
 public class MainActivity extends ListActivity {
@@ -50,7 +52,18 @@ public class MainActivity extends ListActivity {
 		map = new HashMap<String, String>();
 		map.put("title", "CameraMode");
 		map.put("class", CameraModeShow.class.getName());
+		mData.add(map);	
+		
+		map = new HashMap<String, String>();
+		map.put("title", "CameraModeList");
+		map.put("class", CameraModeListShow.class.getName());
+		mData.add(map);	
+	
+		map = new HashMap<String, String>();
+		map.put("title", "SwipeListActivity");
+		map.put("class", SwipeListActivity.class.getName());
 		mData.add(map);			
+		
 	}
 	
 	
